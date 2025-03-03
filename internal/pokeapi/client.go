@@ -11,8 +11,8 @@ type Client struct {
 }
 
 // NewClient -
-func NewClient(timeout time.Duration) Client {
-	return Client{
+func NewClient(timeout time.Duration) *Client {
+	return &Client{
 		httpClient: http.Client{
 			Timeout: timeout,
 		},

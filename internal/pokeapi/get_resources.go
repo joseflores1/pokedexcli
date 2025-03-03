@@ -3,13 +3,26 @@ package pokeapi
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+
+	"github.com/joseflores1/pokedexcli/internal/pokecache"
 )
 
-func (c *Client) GetResources(pageURL *string) (UnnamedResources, error) {
-	url := baseURL + "/location-area"
+func (c *Client) GetResources(pageURL *string, endpoint string, cache *pokecache.Cache) (UnnamedResources, error) {
+	url := baseURL + endpoint + "?offset=0&limit=20"
 	if pageURL != nil {
-		url = *pageURL
+		url  = *pageURL
+	}
+	if value, ok := cache.Get(url); ok {
+		fmt.Println("Retrieving data from cache!")
+		resources := UnnamedResources{}
+		err := json.Unmarshal(value, &resources)
+		if err != nil {
+			return UnnamedResources{}, fmt.Errorf("error unmarshalling data from cache: %w", err)
+		}
+		return resources, nil
+
 	}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -29,11 +42,17 @@ func (c *Client) GetResources(pageURL *string) (UnnamedResources, error) {
 		return UnnamedResources{}, fmt.Errorf("error: StatusCode = %d", res.StatusCode) 
 	}	
 
-	var resources UnnamedResources
-	decoder := json.NewDecoder(res.Body)
-	err = decoder.Decode(&resources)
+	data, err := io.ReadAll(res.Body)
 	if err != nil {
-		return UnnamedResources{}, fmt.Errorf("error decoding response: %w", err)
+		return UnnamedResources{}, fmt.Errorf("error reading response data: %w", err)
+	}
+	cache.Add(url, data)
+
+	fmt.Println("Retrieving data from request!")
+	resources := UnnamedResources{}
+	err = json.Unmarshal(data, &resources)
+	if err != nil {
+		return UnnamedResources{}, fmt.Errorf("error unmarshalling response: %w", err)
 	}
 
 	return resources, nil

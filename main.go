@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/joseflores1/pokedexcli/internal/pokeapi"
+	"github.com/joseflores1/pokedexcli/internal/pokecache"
 )
 
 func main() {
@@ -12,6 +13,8 @@ func main() {
 		Client: pokeClient,
 		Next: nil,
 		Previous: nil,
+		Endpoint: "",
+		Cache: pokecache.NewCache(time.Minute * 5),
 	}
 
 	startRepl(config)

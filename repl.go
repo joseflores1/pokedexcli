@@ -7,12 +7,15 @@ import (
 	"strings"
 
 	"github.com/joseflores1/pokedexcli/internal/pokeapi"
+	"github.com/joseflores1/pokedexcli/internal/pokecache"
 )
 
 type config struct {
-	Client pokeapi.Client
+	Client *pokeapi.Client
 	Next *string 
 	Previous *string 
+	Endpoint string
+	Cache *pokecache.Cache
 }
 
 type cliCommand struct {
@@ -54,6 +57,11 @@ func cleanInput(text string) (words []string) {
 
 func startRepl(config *config) {
 	scanner := bufio.NewScanner(os.Stdin)	
+	fmt.Print("Write the endpoint: ")
+	scanner.Scan()
+	path := scanner.Text()
+	config.Endpoint = path
+
 	for {
 		fmt.Print("Pokedex > ")
 		scanner.Scan()

@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 func commandMap(config *config) error {
-	resources, err := config.Client.GetResources(config.Next)
+	resources, err := config.Client.GetResources(config.Next, config.Endpoint, config.Cache)
 	if err != nil {
 		return fmt.Errorf("error getting Resources's names:%w", err)
 	}
@@ -24,7 +24,7 @@ func commandMapb(config *config) error {
 		return fmt.Errorf("error because nil page (likely got to the last \"previous\" page)")
 	}
 
-	resources, err := config.Client.GetResources(config.Previous)
+	resources, err := config.Client.GetResources(config.Previous, config.Endpoint, config.Cache)
 	if err != nil {
 		return fmt.Errorf("error getting resources's names: %w", err)
 	}
