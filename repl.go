@@ -5,14 +5,54 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/joseflores1/pokedexcli/internal/pokeapi"
 )
 
-var config *Config = &Config{
-	Next: &locationEndpoint,
-	Previous: nil,
+type config struct {
+	Client pokeapi.Client
+	Next *string 
+	Previous *string 
 }
 
-func startRepl() error {
+type cliCommand struct {
+	name        string
+	description string
+	callback    func(*config) error
+}
+
+func getCommands() map[string]cliCommand {
+	return map[string]cliCommand{
+		"help": {
+			name:        "help",
+			description: "Displays a help message",
+			callback:    commandHelp,
+		},
+		"map": {
+			name: "map",
+			description: "Displays in each subsequent call the next 20 location's names",
+			callback: commandMap,
+		},
+		"mapb": {
+			name: "mapb",
+			description: "Displays in each subsequent call the previous 20 location's names",
+			callback: commandMapb,
+		},
+		"exit": {
+			name:        "exit",
+			description: "Exit the Pokedex",
+			callback:    commandExit,
+		},
+	}
+}
+
+func cleanInput(text string) (words []string) {
+	lowerTrim := strings.Trim(strings.ToLower(text), " ")
+	wordsSlice := strings.Split(lowerTrim, " ")
+	return wordsSlice
+}
+
+func startRepl(config *config) {
 	scanner := bufio.NewScanner(os.Stdin)	
 	for {
 		fmt.Print("Pokedex > ")
@@ -37,19 +77,14 @@ func startRepl() error {
 
 		fmt.Println("------------------------------------------------------")
 		err := commandValue.callback(config)
-		fmt.Println("------------------------------------------------------")
+		if err == nil {
+			fmt.Println("------------------------------------------------------")
+		}
 
 		if err != nil {
-			return fmt.Errorf("error when trying to use \"%s\" command\n: %w", command, err)
+			fmt.Printf("error when trying to use \"%s\" command\n%s", command, err)
+			fmt.Println("\n------------------------------------------------------")
 		}
 	}
 
 }
-func cleanInput(text string) (words []string) {
-	lowerTrim := strings.Trim(strings.ToLower(text), " ")
-	wordsSlice := strings.Split(lowerTrim, " ")
-	return wordsSlice
-
-}
-
-
