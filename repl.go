@@ -7,8 +7,12 @@ import (
 	"strings"
 )
 
+var config *Config = &Config{
+	Next: &locationEndpoint,
+	Previous: nil,
+}
 
-func startRepl() {
+func startRepl() error {
 	scanner := bufio.NewScanner(os.Stdin)	
 	for {
 		fmt.Print("Pokedex > ")
@@ -21,7 +25,8 @@ func startRepl() {
 		}
 
 		command := cleanText[0]
-		
+
+
 		commandValue, ok := getCommands()[command]
 		if !ok {
 			fmt.Println("------------------------------------------------------")
@@ -31,11 +36,11 @@ func startRepl() {
 		}
 
 		fmt.Println("------------------------------------------------------")
-		err := commandValue.callback()
+		err := commandValue.callback(config)
 		fmt.Println("------------------------------------------------------")
 
 		if err != nil {
-			fmt.Printf("error when trying to use \"%s\" command\n:", command)
+			return fmt.Errorf("error when trying to use \"%s\" command\n: %w", command, err)
 		}
 	}
 
