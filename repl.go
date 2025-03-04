@@ -21,7 +21,7 @@ type config struct {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, string) error
 }
 
 func getCommands() map[string]cliCommand {
@@ -41,6 +41,11 @@ func getCommands() map[string]cliCommand {
 			description: "Displays in each subsequent call the previous 20 location's names",
 			callback: commandMapb,
 		},
+		"explore": {
+			name: "explore",
+			description: "Given an input location area, displays all the pokemon in it",
+			callback: commandExplore,
+		},
 		"exit": {
 			name:        "exit",
 			description: "Exit the Pokedex",
@@ -57,10 +62,8 @@ func cleanInput(text string) (words []string) {
 
 func startRepl(config *config) {
 	scanner := bufio.NewScanner(os.Stdin)	
-	fmt.Print("Write the endpoint: ")
-	scanner.Scan()
-	path := scanner.Text()
-	config.Endpoint = path
+
+	selectionMenu(config, *scanner)
 
 	for {
 		fmt.Print("Pokedex > ")
@@ -73,7 +76,11 @@ func startRepl(config *config) {
 		}
 
 		command := cleanText[0]
+		var parameter string
 
+		if len(cleanText) > 1 {
+			parameter = cleanText[1]
+		}
 
 		commandValue, ok := getCommands()[command]
 		if !ok {
@@ -84,7 +91,7 @@ func startRepl(config *config) {
 		}
 
 		fmt.Println("------------------------------------------------------")
-		err := commandValue.callback(config)
+		err := commandValue.callback(config, parameter)
 		if err == nil {
 			fmt.Println("------------------------------------------------------")
 		}
@@ -94,5 +101,49 @@ func startRepl(config *config) {
 			fmt.Println("\n------------------------------------------------------")
 		}
 	}
+
+}
+
+func getEndpoints()map[string]string {
+	return map[string]string{
+		"1": "/location-area",
+		"2": "/location",
+	}
+}
+
+func selectionMenu(config *config, scanner bufio.Scanner) {
+	fmt.Printf(`
+----------------------------------------------------
+Input a number to select the endpoint for retrieval:
+
+1. %s
+2. %s
+----------------------------------------------------  
+`, getEndpoints()["1"][1:], getEndpoints()["2"][1:])
+
+	var path string
+
+	for {
+		fmt.Print("Enter your option: ")
+		scanner.Scan()
+		option:= scanner.Text()
+		switch option {
+		case "1":
+			path = getEndpoints()[option]
+		case "2":
+			path = getEndpoints()[option]
+		default:
+			fmt.Println("----------------------")	
+			fmt.Println("Input a valid number: ")
+			fmt.Println("----------------------")	
+		}
+		if path != "" {
+			break
+		}
+	}
+	config.Endpoint = path
+	fmt.Println("----------------------")	
+	fmt.Printf("You chose the %s option!\n", path[1:])
+	fmt.Println("----------------------")	
 
 }

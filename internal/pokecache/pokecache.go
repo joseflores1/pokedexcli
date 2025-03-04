@@ -46,7 +46,7 @@ func NewCache(interval time.Duration) *Cache {
 	cache := &Cache{
 		CacheMap: make(map[string]cacheEntry),
 		interval: interval,
-		mu: &sync.Mutex{},
+		mu: sync.Mutex{},
 	}
 
 	go cache.reapLoop()
