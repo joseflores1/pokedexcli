@@ -53,9 +53,14 @@ func getCommands() map[string]cliCommand {
 			callback:    commandExit,
 		},
 		"catch": {
-			name: "catch",
+			name: "catch <pokemon_name>",
 			description: "Catches <pokemon_name> with probability defined by its base experience value",
 			callback: commandCatch,
+		},
+		"inspect": {
+			name: "inspect <pokemon_name>",
+			description: "Displays information of <pokemon_name> only if caught" ,
+			callback: commandInspect,
 		},
 	}
 }
@@ -102,7 +107,7 @@ func startRepl(config *config) {
 		}
 
 		if err != nil {
-			fmt.Printf("error when trying to use \"%s\" command\n%s", command, err)
+			fmt.Printf("error when trying to use \"%s\" command\n%s", commandValue.name, err)
 			fmt.Println("\n------------------------------------------------------")
 		}
 	}

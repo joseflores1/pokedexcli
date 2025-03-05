@@ -46,7 +46,7 @@ func (c *Client) GetUnnamedResources(pageURL *string, endpoint string, cache *po
 	if err != nil {
 		return unnamedResources{}, fmt.Errorf("error reading response data: %w", err)
 	}
-	cache.Add(url, data)
+	
 
 	fmt.Println("Retrieving data from request!")
 	resources := unnamedResources{}
@@ -54,7 +54,7 @@ func (c *Client) GetUnnamedResources(pageURL *string, endpoint string, cache *po
 	if err != nil {
 		return unnamedResources{}, fmt.Errorf("error unmarshalling response: %w", err)
 	}
-
+	cache.Add(url, data)
 	return resources, nil
 }
 
@@ -96,7 +96,7 @@ func GetNamedResources[T namedResource](baseURL, name string, cache *pokecache.C
 	if err != nil {
 		return empty, fmt.Errorf("error reading response data: %w", err)
 	}
-	cache.Add(url, data)
+	
 
 	fmt.Println("Retrieving data from request!")
 	resources := empty
@@ -105,6 +105,7 @@ func GetNamedResources[T namedResource](baseURL, name string, cache *pokecache.C
 		return empty, fmt.Errorf("error unmarshalling response: %w", err)
 	}
 
+	cache.Add(url, data)
 	return resources, nil
 }
 

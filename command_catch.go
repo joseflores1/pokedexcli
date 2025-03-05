@@ -27,7 +27,7 @@ func commandCatch(config *config, args ...string) error {
 
 	res := float64(r.Intn(pokemon.BaseExperience)) 
 	fmt.Printf("Throwing a Pokeball at %s...\n", pokemon.Name)
-	if res > 40 {
+	if res < 70 {
 		fmt.Printf("%s was caught!\n", pokemon.Name)
 		config.Pokedex.PokemonList[args[0]] = pokemon
 	} else {
