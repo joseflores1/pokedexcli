@@ -63,6 +63,7 @@ func GetNamedResources[T namedResource](baseURL, name string, cache *pokecache.C
 	url := baseURL + name
 
 	var empty T
+
 	if value, ok := cache.Get(url); ok {
 		fmt.Println("Retrieving data from cache!")
 		resources := empty
