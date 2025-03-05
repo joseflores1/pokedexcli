@@ -12,8 +12,7 @@ func commandInspect(config *config, args ...string) error {
 	}
 	if _, ok := config.Pokedex.PokemonList[args[0]]; !ok {
 		fmt.Printf("You have not caught a %s yet!\n\n", args[0])
-		fmt.Println("Your Pokedex:")
-		printPokedex(config.Pokedex.PokemonList)
+		commandPokedex(config)
 		return nil
 	}
 
