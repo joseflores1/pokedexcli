@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 )
-func commandMap(config *config, parameter string) error {
+func commandMap(config *config, args ...string) error {
 	resources, err := config.Client.GetUnnamedResources(config.Next, config.Endpoint, config.Cache)
 	if err != nil {
 		return fmt.Errorf("error getting Resources's names: %w", err)
@@ -19,7 +19,7 @@ func commandMap(config *config, parameter string) error {
 	return nil
 }
 
-func commandMapb(config *config, parameter string) error {
+func commandMapb(config *config, args ...string) error {
 	if config.Previous == nil {
 		return fmt.Errorf("error because nil page (likely got to the last \"previous\" page)")
 	}

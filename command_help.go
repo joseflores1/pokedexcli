@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 )
-func commandHelp(config *config, parameter string) error {
+func commandHelp(config *config, args ...string) error {
 	_, err := fmt.Print("Welcome to the Pokedex!\nUsage:\n\n")
 	if err != nil {
 		return fmt.Errorf("error when printing help message: %w", err)

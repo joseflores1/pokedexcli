@@ -15,6 +15,7 @@ func main() {
 		Previous: nil,
 		Endpoint: "",
 		Cache: pokecache.NewCache(time.Minute * 5),
+		Pokedex: &pokeapi.Pokedex{PokemonList: make(map[string]pokeapi.PokemonByName)},
 	}
 
 	startRepl(config)

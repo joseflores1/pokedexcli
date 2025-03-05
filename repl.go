@@ -16,12 +16,13 @@ type config struct {
 	Previous *string 
 	Endpoint string
 	Cache *pokecache.Cache
+	Pokedex *pokeapi.Pokedex
 }
 
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config, string) error
+	callback    func(*config, ...string) error
 }
 
 func getCommands() map[string]cliCommand {
@@ -42,7 +43,7 @@ func getCommands() map[string]cliCommand {
 			callback: commandMapb,
 		},
 		"explore": {
-			name: "explore",
+			name: "explore <location_name>",
 			description: "Given an input location area, displays all the pokemon in it",
 			callback: commandExplore,
 		},
@@ -50,6 +51,11 @@ func getCommands() map[string]cliCommand {
 			name:        "exit",
 			description: "Exit the Pokedex",
 			callback:    commandExit,
+		},
+		"catch": {
+			name: "catch",
+			description: "Catches <pokemon_name> with probability defined by its base experience value",
+			callback: commandCatch,
 		},
 	}
 }
@@ -64,7 +70,6 @@ func startRepl(config *config) {
 	scanner := bufio.NewScanner(os.Stdin)	
 
 	selectionMenu(config, *scanner)
-
 	for {
 		fmt.Print("Pokedex > ")
 		scanner.Scan()
@@ -76,10 +81,10 @@ func startRepl(config *config) {
 		}
 
 		command := cleanText[0]
-		var parameter string
+		args := []string{}
 
 		if len(cleanText) > 1 {
-			parameter = cleanText[1]
+			args = cleanText[1:]
 		}
 
 		commandValue, ok := getCommands()[command]
@@ -91,7 +96,7 @@ func startRepl(config *config) {
 		}
 
 		fmt.Println("------------------------------------------------------")
-		err := commandValue.callback(config, parameter)
+		err := commandValue.callback(config, args...)
 		if err == nil {
 			fmt.Println("------------------------------------------------------")
 		}
